@@ -2,7 +2,6 @@ environment:
   matrix:
     - nodejs_version: "8"
     - nodejs_version: "10"
-  EMBARK_NO_PREPARE: true
 cache:
  - "%LOCALAPPDATA%\\Yarn"
 install:
@@ -13,11 +12,7 @@ install:
   - node --version
   - npm --version
   - yarn --version
-  - yarn install
-  - cd embark-ui && yarn install && cd ..
-  - npm run check-working-tree
+  - echo install managed by package.json script 'ci'
 test_script:
-  - npm run build:node
-  - npm test
-  - npm run check-working-tree
+  - npm run ci
 build: off
