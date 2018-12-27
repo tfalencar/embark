@@ -1,11 +1,13 @@
 .DS_Store
 .idea
+.nyc_output
 .vscode
+/coverage
 @embark*.tgz
 NOTES
 TODO
+dist
 embark*.tgz
-lerna-debug.log
 node_modules
 npm-debug.log*
 npm-shrinkwrap.json
@@ -14,4 +16,3 @@ package-lock.json
 yarn-debug.log*
 yarn-error.log*
 yarn.lock
-!/yarn.lock
