@@ -1,11 +1,10 @@
+.DS_Store
 .idea
-.node-xmlhttprequest-sync-*
-.tern-port
 .vscode
+@embark*.tgz
 NOTES
 TODO
-dist
-embark-*.tgz
+embark*.tgz
 node_modules
 npm-debug.log*
 npm-shrinkwrap.json
@@ -13,5 +12,5 @@ package
 package-lock.json
 yarn-debug.log*
 yarn-error.log*
-coverage
-.nyc_output
+yarn.lock
+!/yarn.lock

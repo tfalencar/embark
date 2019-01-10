@@ -1,7 +1,8 @@
 /* global __dirname module process require */
 
-const {execSync} = require('child_process');
 const {delimiter} = require('path');
+const {execSync} = require('child_process');
+const {existsSync} = require('fs');
 const {joinPath} = require('../utils/utils.js');
 
 function anchoredValue(anchor, value) {
@@ -62,10 +63,20 @@ try {
   YARN_GLOBAL_PATH = '';
 }
 
+const MONOREPO_EMBARK_PATH = joinPath(
+  anchoredValue(EMBARK_PATH), '../../packages/embark'
+);
+let MONOREPO_PATH;
+if (existsSync(MONOREPO_EMBARK_PATH)) {
+  MONOREPO_PATH = joinPath(MONOREPO_EMBARK_PATH, '../..');
+}
+
 const NODE_PATH = 'NODE_PATH';
 // NOTE: setting NODE_PATH at runtime won't effect lookup behavior in the
 // current process, but will take effect in child processes
 process.env[NODE_PATH] = joinPath(anchoredValue(EMBARK_PATH), 'node_modules') +
+  (MONOREPO_PATH ? delimiter : '') +
+  ((MONOREPO_PATH && joinPath(MONOREPO_PATH, 'node_modules')) || '') +
   (YARN_GLOBAL_PATH ? delimiter : '') +
   (YARN_GLOBAL_PATH || '') +
   (process.env[NODE_PATH] ? delimiter : '') +

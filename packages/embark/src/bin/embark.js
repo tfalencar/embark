@@ -43,7 +43,7 @@ function main() {
 
   var containing = findBinContaining(dappPath, invoked);
   var installed = findBinInstalled(dappPath, invoked);
-  var local = selectLocal(containing, installed);
+  var local = selectLocal(containing, installed, invoked);
   var pkgJson = findPkgJson(dappPath, embarkJson, local);
   process.env.PKG_PATH = pkgJson.dirname;
   var embark = select(invoked, local);
@@ -53,7 +53,7 @@ function main() {
 
 // -----------------------------------------------------------------------------
 
-var checkDeps = require('check-dependencies');
+var checkDeps = require('../lib/utils/checkDependencies');
 var npmlog = require('npmlog');
 var findUp = require('find-up');
 var fs = require('fs');
@@ -544,9 +544,10 @@ PkgJsonEmbark.prototype.nodeRangeDefault = semver.Range('>=8.11.3').range;
 
 PkgJsonEmbark.prototype.setNodeRange = function () {
   if (isObject(this.json) &&
-      this.json.hasOwnProperty('engines') &&
-      this.json.engines.hasOwnProperty('node')) {
-    this.nodeRange = this.json.engines.node;
+      this.json.hasOwnProperty('runtime') &&
+      this.json.runtime.hasOwnProperty('engines') &&
+      this.json.runtime.engines.hasOwnProperty('node')) {
+    this.nodeRange = this.json.runtime.engines.node;
   }
 };
 
@@ -939,7 +940,7 @@ function reportUnsupportedNode(
 
 function select(invoked, local) {
   var embark;
-  if (local && local.binrealpath !== invoked.binrealpath) {
+  if (local) {
     embark = local;
   } else {
     embark = invoked;
@@ -947,9 +948,10 @@ function select(invoked, local) {
   return embark;
 }
 
-function selectLocal(containing, installed) {
+function selectLocal(containing, installed, invoked) {
   var local;
   if (containing.binrealpath &&
+      containing.binrealpath !== invoked.binrealpath &&
       (!installed.binrealpath ||
        subdir(
          installed.pkgJsonLocalExpected.dirname,
@@ -958,6 +960,7 @@ function selectLocal(containing, installed) {
     local = containing;
   }
   if (installed.binrealpath &&
+      installed.binrealpath !== invoked.binrealpath &&
       (!containing.binrealpath ||
        subdir(containing.pkgDir, installed.pkgDir))) {
     local = installed;

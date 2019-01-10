@@ -1,0 +1,30 @@
+{
+  "name": "test_app",
+  "private": true,
+  "version": "0.0.1",
+  "description": "",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "clean": "npx cross-env-shell \"node $EMBARK_BIN reset || exit 0\"",
+    "reset": "npm run clean && npx rimraf extensions/**/node_modules node_modules",
+    "test": "cross-env-shell \"node $EMBARK_BIN test\""
+  },
+  "author": "",
+  "license": "ISC",
+  "homepage": "",
+  "devDependencies": {
+    "@babel/code-frame": "7.0.0-rc.1",
+    "cross-env": "5.2.0",
+    "rimraf": "2.6.3"
+   },
+  "dependencies": {
+    "bootstrap": "3.3.6",
+    "embark-service": "file:extensions/embark-service",
+    "haml": "0.4.3",
+    "jquery": "3.3.1",
+    "react": "16.0.0",
+    "react-bootstrap": "0.32.0",
+    "react-dom": "16.2.0",
+    "zeppelin-solidity": "1.12.0"
+  }
+}

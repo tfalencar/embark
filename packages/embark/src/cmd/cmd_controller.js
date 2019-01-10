@@ -429,7 +429,7 @@ class EmbarkController {
 
   reset() {
     var fs = require('../lib/core/fs.js');
-    fs.removeSync('./chains.json');
+    fs.removeSync('chains.json');
     fs.removeSync('.embark/');
     fs.removeSync('node_modules/.cache');
     fs.removeSync('dist/');

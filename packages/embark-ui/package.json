@@ -1,7 +1,30 @@
 {
   "name": "embark-ui",
-  "version": "4.0.0-alpha.2",
-  "dependencies": {
+  "version": "4.0.0-beta.0",
+  "author": "Iuri Matias <iuri.matias@gmail.com>",
+  "contributors": [],
+  "description": "Embark is a framework that allows you to easily develop and deploy DApps",
+  "homepage": "https://embark.status.im/",
+  "keywords": [
+    "blockchain",
+    "dapps",
+    "ethereum",
+    "ipfs",
+    "serverless",
+    "solc",
+    "solidity"
+  ],
+  "license": "MIT",
+  "repository": "github:embark-framework/embark",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "clean": "npx rimraf build embark-*.tgz package",
+    "lint": "eslint src/",
+    "reset": "npm run clean && npx rimraf node_modules",
+    "start": "node scripts/start.js",
+    "test_": "node scripts/test.js"
+  },
+  "devDependencies": {
     "@babel/core": "7.1.0",
     "@coreui/coreui": "2.1.0",
     "@coreui/react": "2.1.0",
@@ -85,13 +108,6 @@
     "webpack-manifest-plugin": "2.0.4",
     "workbox-webpack-plugin": "3.6.3"
   },
-  "scripts": {
-    "build": "node scripts/build.js",
-    "clean": "rimraf build",
-    "lint": "eslint src/",
-    "start": "node scripts/start.js",
-    "test": "node scripts/test.js"
-  },
   "eslintConfig": {
     "extends": "react-app",
     "rules": {
@@ -149,5 +165,10 @@
     "presets": [
       "react-app"
     ]
+  },
+  "engines": {
+    "node": ">=8.12.0",
+    "npm": ">=6.4.1",
+    "yarn": ">=1.12.3"
   }
 }

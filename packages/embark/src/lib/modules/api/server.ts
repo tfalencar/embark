@@ -3,11 +3,14 @@ import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 import proxy from "express-http-proxy";
 import expressWs from "express-ws";
+import findUp from "find-up";
 import helmet from "helmet";
 import * as http from "http";
 import * as path from "path";
 import * as ws from "ws";
 import { Embark, Plugins } from "../../../typings/embark";
+// @ts-ignore
+import { embarkPath } from "../../core/fs";
 
 type Method = "get" | "post" | "ws" | "delete";
 
@@ -101,7 +104,10 @@ export default class Server {
     if (process.env.DEVELOPMENT) {
       ui = proxy("http://localhost:3000");
     } else {
-      ui = express.static(path.join(__dirname, "../../../../embark-ui/build"));
+      ui = express.static(
+        findUp.sync("node_modules/embark-ui/build", {cwd: embarkPath()}) ||
+          embarkPath("node_modules/embark-ui/build"),
+      );
     }
 
     instance.app.use("/", ui);
