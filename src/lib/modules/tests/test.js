@@ -189,6 +189,13 @@ class Test {
       function checkDeploymentOpts(next) {
         self.checkDeploymentOptions(options, next);
       },
+      function prepareContracts(next) {
+        if (!self.firstDeployment || !self.options.coverage) {
+          return next();
+        }
+        console.info('Preparing contracts for coverage'.cyan);
+        self.events.request("coverage:prepareContracts", next);
+      },
       function compileContracts(next) {
         if (!self.firstDeployment) {
           return next();

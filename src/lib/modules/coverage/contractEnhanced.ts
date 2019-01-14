@@ -3,11 +3,11 @@ import parser, { LineColumn, Location } from "solidity-parser-antlr";
 import { EventLog } from "web3/types";
 
 import { decrypt } from "./eventId";
+import { ImportResolver } from "./importResolver";
 import { Injector } from "./injector";
 import { Instrumenter } from "./instrumenter";
 import { InstrumentWalker } from "./instrumentWalker";
 import { coverageContractsPath } from "./path";
-import { Suppressor } from "./suppressor";
 import { BranchType, Coverage } from "./types";
 
 const fs = require("../../core/fs");
@@ -24,10 +24,10 @@ function nextId() {
 export class ContractEnhanced {
   public id: number;
   public coverage: Coverage;
+  public coverageFilepath: string;
   public originalSource: string;
   public source: string;
   private ast: parser.ASTNode;
-  private coverageFilepath: string;
   private functionsBodyLocation: {[id: number]: Location} = {};
 
   constructor(public filepath: string, public solcVersion: string) {
@@ -51,8 +51,14 @@ export class ContractEnhanced {
     this.ast = parser.parse(this.source, {loc: true, range: true});
   }
 
+  public async remapImports() {
+    await new ImportResolver(this).process();
+  }
+
+  public copyDependencies() {
+  }
+
   public instrument() {
-    new Suppressor(this).process();
     const instrumenter = new Instrumenter(this);
     const instrumentWalker = new InstrumentWalker(instrumenter);
     instrumentWalker.walk(this.ast);

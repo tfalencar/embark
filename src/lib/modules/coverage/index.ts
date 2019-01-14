@@ -6,6 +6,7 @@ import { Contract } from "../../../typings/contract";
 import { Embark } from "../../../typings/embark";
 import { ContractEnhanced } from "./contractEnhanced";
 import { coverageContractsPath } from "./path";
+import { Suppressor } from "./suppressor";
 import { Coverage as ICoverage } from "./types";
 
 const fs = require("../../core/fs");
@@ -23,8 +24,11 @@ export default class Coverage {
 
     this.contracts = this.getContracts();
 
-    this.instrumentContracts();
-    this.swapContracts();
+    this.embark.events.setCommandHandler("coverage:prepareContracts", async (done) => {
+      await this.prepareContracts();
+      this.swapContracts();
+      done();
+    });
 
     this.embark.events.on("tests:ready", this.pushDeployedContracts.bind(this));
     this.embark.events.on("tests:finished", this.produceCoverageReport.bind(this));
@@ -41,15 +45,18 @@ export default class Coverage {
                     .map((filepath) => new ContractEnhanced(filepath, solcVersion));
   }
 
-  private instrumentContracts() {
-    this.contracts.forEach((contract) => contract.instrument());
+  private async prepareContracts() {
+    const promises = this.contracts.map(async (contract) => {
+      contract.copyDependencies();
+      contract.instrument();
+      contract.save();
+      await contract.remapImports();
+    });
+    await Promise.all(promises);
+    new Suppressor().process();
   }
 
   private swapContracts() {
-    this.contracts.forEach((contract) => {
-      contract.save();
-    });
-
     this.embark.config.embarkConfig.contracts = this.contractsDir.reduce((acc: string[], value: string) => (
       acc.concat(path.join(coverageContractsPath(), value))
     ), []);

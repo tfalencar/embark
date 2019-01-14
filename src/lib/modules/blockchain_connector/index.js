@@ -105,7 +105,11 @@ class BlockchainConnector {
 
     if (type === 'vm') {
       const sim = self._getSimulator();
-      const options = Object.assign({}, self.config.contractsConfig.deployment, {gasPrice: "0x01", gasLimit: "0xfffffffffffff"});
+      const options = Object.assign({}, self.config.contractsConfig.deployment, {
+        gasPrice: "0x01",
+        gasLimit: "0xfffffffffffff",
+        allowUnlimitedContractSize: true
+      });
       self.provider = sim.provider(options);
 
       if (coverage) {
