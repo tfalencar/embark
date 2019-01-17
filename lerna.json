@@ -4,14 +4,13 @@
       "exact": true
     },
     "publish": {
-      "exact": true,
       "ignoreChanges": [
         "*.md"
       ],
       "npmClient": "npm",
       "registry": "https://registry.npmjs.org/"
     },
-    "run" : {
+    "run": {
       "npmClient": "npm"
     }
   },

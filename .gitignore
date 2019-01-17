@@ -5,6 +5,7 @@
 NOTES
 TODO
 embark*.tgz
+lerna-debug.log
 node_modules
 npm-debug.log*
 npm-shrinkwrap.json

@@ -8,9 +8,15 @@ try {
   const workDir = path.join(__dirname, '../packages');
   const demoDir = path.join(workDir, 'embark_demo');
   if (!fs.existsSync(demoDir)) {
-    const EMBARK_BIN = process.env.SCRIPT_EMBARK_BIN || 'embark';
+    const SCRIPT_EMBARK_BIN = process.env.SCRIPT_EMBARK_BIN;
+    let EMBARK_BIN;
+    if (SCRIPT_EMBARK_BIN) {
+      EMBARK_BIN = `node ${SCRIPT_EMBARK_BIN}`;
+    } else {
+      EMBARK_BIN = `embark`;
+    }
     process.env.EMBARK_NO_SHIM='t';
-    execSync(`node ${EMBARK_BIN} demo`, {cwd: workDir, stdio: 'inherit'});
+    execSync(`${EMBARK_BIN} demo`, {cwd: workDir, stdio: 'inherit'});
     const pkgJsonPath = path.join(demoDir, 'package.json');
     const pkgJson = require(pkgJsonPath);
     if (!pkgJson.devDependencies) pkgJson.devDependencies = {};

@@ -1,8 +1,11 @@
 {
   "devDependencies": {
-    "lerna": "3.10.5",
+    "chalk": "2.4.2",
+    "lerna": "3.10.6",
+    "minimist": "1.2.0",
     "npm-run-all": "4.1.5",
-    "rimraf": "2.6.3"
+    "rimraf": "2.6.3",
+    "semver": "5.6.0"
   },
   "engines": {
     "node": ">=8.12.0",
@@ -13,30 +16,37 @@
   "private": true,
   "scripts": {
     "build": "lerna run --stream build",
-    "ci": "yarn install && npm-run-all qa:1 ci:1 qa:3 test_dapps:ci cwtree",
-    "ci:1": "npm run build -- --ignore embark-ui",
+    "build:no-ui": "npm run build -- --ignore embark-ui",
+    "build:qa": "npm run build -- --concurrency=1",
+    "ci": "yarn install && npm-run-all qa:1 ci:* qa:3 test_dapps:ci cwtree",
+    "ci:1": "npm run build:no-ui -- --concurrency=1",
     "clean": "npx lerna run --parallel clean",
     "cwtree": "node scripts/check-working-tree",
     "globalize": "node scripts/globalize",
     "lint": "lerna run --parallel lint",
-    "package": "lerna exec --concurrency=1 --stream npm pack",
-    "qa": "npm run cwtree && npm run reboot:full && npm-run-all qa:* test_dapps:qa cwtree",
-    "qa:1": "npm-run-all cwtree lint typecheck",
-    "qa:2": "npm run build",
-    "qa:3": "npm-run-all cwtree test cwtree package cwtree",
+    "lint:qa": "lerna run --concurrency=1 --stream lint",
+    "package": "lerna exec --parallel npm pack",
+    "package:qa": "lerna exec --concurrency=1 --stream npm pack",
+    "preqa": "yarn install && npm-run-all cwtree build:no-ui",
+    "qa": "npm-run-all cwtree reboot:full qa:* test_dapps:qa cwtree",
+    "qa:1": "npm-run-all cwtree lint:qa typecheck:qa",
+    "qa:2": "npm run build:qa",
+    "qa:3": "npm-run-all cwtree test:qa cwtree package:qa cwtree",
     "reboot": "npm run reset && yarn install",
     "reboot:full": "npm run reset:full && yarn install",
     "release": "node scripts/release",
-    "release:prepare": "npm run cwtree && yarn install && npm run ci:1 && cd test_dapps && npm run release:prepare",
     "reset": "npx lerna run --parallel reset",
-    "reset:full": "npm run reset && npx rimraf node_modules",
+    "reset:full": "npx npm-run-all reset reset:top",
+    "reset:top": "npx rimraf node_modules",
     "start": "lerna run --parallel start",
     "test": "lerna run --stream test",
     "test:full": "npm-run-all lint typecheck test test_dapps",
+    "test:qa": "npm run test -- --concurrency=1",
     "test_dapps": "cd test_dapps && yarn install && npm run test",
     "test_dapps:ci": "cd test_dapps && npm run ci",
     "test_dapps:qa": "cd test_dapps && npm run qa",
-    "typecheck": "lerna run --parallel typecheck"
+    "typecheck": "lerna run --parallel typecheck",
+    "typecheck:qa": "lerna run --concurrency=1 --stream typecheck"
   },
   "workspaces": ["packages/*"]
 }
