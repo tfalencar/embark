@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "@aragon/os/contracts/acl/ACL.sol";
+// import "@aragon/os/contracts/acl/ACL.sol";
 
 contract SimpleStorage {
   uint public storedData;
@@ -16,7 +16,5 @@ contract SimpleStorage {
   function get() public view returns (uint retVal) {
     return storedData;
   }
-
-  function ESCAPE_HATCH_CALLER_ROLE() external  returns (bytes32) { return "hello"; }
 
 }
