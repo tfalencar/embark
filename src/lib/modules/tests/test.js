@@ -250,8 +250,11 @@ class Test {
     return instance;
   }
 
-  track(instance) {
-    this.events.emit("tests:manualDeploy", instance);
+  track(jsonInterface, address) {
+    this.events.request('blockchain:get', (web3) => {
+      const instance = new web3.eth.Contract(jsonInterface, address);
+      this.events.emit("tests:manualDeploy", instance);
+    });
   }
 
   async _deploy(config, callback) {
