@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-// import "@aragon/os/contracts/acl/ACL.sol";
+import "https://github.com/aragon/aragonOS/blob/dev/contracts/acl/ACL.sol";
 
 contract SimpleStorage {
   uint public storedData;
