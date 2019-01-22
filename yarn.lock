@@ -21271,11 +21271,6 @@ vm-browserify@0.0.4:
   dependencies:
     indexof "0.0.1"
 
-vm2@3.6.4:
-  version "3.6.4"
-  resolved "https://registry.yarnpkg.com/vm2/-/vm2-3.6.4.tgz#88b27a9f328a0630671841363692a57d24dead33"
-  integrity sha512-LFj8YL9DyGn+fwgG2J+10HyuIpdIRHHN8/3NwKoc2e2t2Pr0aXV/2OSODceDR7NP7VNr8RTqmxHRYcwbNvpbwg==
-
 w3c-hr-time@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/w3c-hr-time/-/w3c-hr-time-1.0.1.tgz#82ac2bff63d950ea9e3189a58a65625fedf19045"
