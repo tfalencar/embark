@@ -1,0 +1,20 @@
+{
+  "name": "contracts_app",
+  "private": true,
+  "version": "0.0.1",
+  "description": "",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "clean": "npx cross-env-shell \"node $EMBARK_BIN reset || exit 0\"",
+    "reset": "npm run clean && npx rimraf node_modules",
+    "test": "cross-env-shell \"node $EMBARK_BIN test\""
+  },
+  "author": "",
+  "license": "ISC",
+  "homepage": "",
+  "devDependencies": {
+    "cross-env": "5.2.0",
+    "rimraf": "2.6.3"
+  },
+  "dependencies": {}
+}
