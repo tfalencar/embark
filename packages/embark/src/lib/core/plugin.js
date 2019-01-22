@@ -90,7 +90,7 @@ Plugin.prototype.loadPlugin = function() {
   if (this.shouldInterceptLogs) {
     this.setUpLogger();
   }
-  if (utils.isEs6Module(this.pluginModule)) {
+  if (typeof this.pluginModule === 'object' && typeof this.pluginModule.default === 'function' && this.pluginModule.__esModule){
     this.pluginModule = this.pluginModule.default;
     return new this.pluginModule(this);
   }
