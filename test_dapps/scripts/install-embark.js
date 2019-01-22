@@ -15,7 +15,9 @@ try {
   fs.mkdirpSync(workDir);
   const setup = `npm init -y`;
   execSync(setup, {cwd: workDir});
-  const install = `npm install --no-package-lock ${tarballs.join(' ')}`;
+  const install = (
+    `npm install --global-style --no-package-lock ${tarballs.join(' ')}`
+  );
   console.log(`${install}\n`);
   execSync(install, {cwd: workDir, stdio: 'inherit'});
 } catch (e) {
