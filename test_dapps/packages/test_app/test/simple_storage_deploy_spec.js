@@ -1,6 +1,6 @@
 /*global contract, it, embark, assert, before, web3*/
 const SimpleStorage = embark.require('Embark/contracts/SimpleStorage');
-const Utils = require('embarkjs').Utils;
+const {Utils} = require('Embark/EmbarkJS');
 
 contract("SimpleStorage Deploy", function () {
   let simpleStorageInstance;
