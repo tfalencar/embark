@@ -620,10 +620,6 @@ function toposort(graph) {
   return toposortGraph(graph);
 }
 
-function isEs6Module(module) {
-  return typeof module === 'object' && typeof module.default === 'function' && module.__esModule;
-}
-
 module.exports = {
   joinPath,
   dirname,
@@ -673,6 +669,5 @@ module.exports = {
   fuzzySearch,
   jsonFunctionReplacer,
   getWindowSize,
-  toposort,
-  isEs6Module
+  toposort
 };
