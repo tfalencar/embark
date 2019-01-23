@@ -110,7 +110,7 @@ class SolcTest extends Test {
       },
       function run(contracts, web3, accounts, next) {
         let fns = [];
-        contracts.forEach((contract) => {
+        async.each(contracts, (contract, eachCb) => {
           let fn = (_callback) => {
             // TODO: web3 is not injected into the function. Issue has been raised on remixTests.
             // To fix once web3 has been made injectable.
@@ -120,12 +120,22 @@ class SolcTest extends Test {
                 methodIdentifiers: contract.functionHashes 
               }
             };
-            remixTests.runTest(contract.className, Test.getWeb3Contract(contract, web3), contractDetails, {accounts},
-              self._prettyPrint.bind(self), _callback);
+            this.getWeb3Contract(contract, web3, (err, web3contract) => {
+              if(err) {
+                return _callback(err);
+              }
+              remixTests.runTest(contract.className, web3contract, contractDetails, {accounts},
+                self._prettyPrint.bind(self), _callback);
+            });
           };
           fns.push(fn);
+          eachCb();
+        }, (err) => {
+          if(err) {
+            return next(err);
+          }
+          async.series(fns, next);
         });
-        async.series(fns, next);
       }
     ], cb);
   }
