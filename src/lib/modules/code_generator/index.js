@@ -137,15 +137,37 @@ class CodeGenerator {
     return result;
   }
 
+  checkIfNeedsUpdate(file, newOutput, callback) {
+    fs.readFile(file, (err, content) => {
+      if (err) {
+        return callback(null, true);
+      }
+      callback(null, content.toString() !== newOutput);
+    });
+  }
+
   generateConfigs(contractConfig) {
-    this.dappConfigs.blockchain = {dappConnection: contractConfig.dappConnection, autoEnable: contractConfig.autoEnable};
+    this.dappConfigs.blockchain = {
+      dappConnection: contractConfig.dappConnection,
+      dappAutoEnable: contractConfig.dappAutoEnable,
+      warnIfMetamask: this.blockchainConfig.isDev,
+      blockchainClient: this.blockchainConfig.ethereumClientName
+    };
+    const dir = utils.joinPath(this.embarkConfig.generationDir, constants.dappConfig.dir);
+    const filePath = utils.joinPath(dir, constants.dappConfig.blockchain);
+    const configString = JSON.stringify(this.dappConfigs.blockchain, null, 2);
     async.waterfall([
       (next) => {
-        fs.mkdirp(utils.joinPath(this.embarkConfig.buildDir, constants.dappConfig.dir), next);
+        fs.mkdirp(dir, next);
       },
       (_dir, next) => {
-        fs.writeFile(utils.joinPath(this.embarkConfig.buildDir, constants.dappConfig.dir, constants.dappConfig.blockchain),
-          JSON.stringify(this.dappConfigs.blockchain, null, 2), next);
+        this.checkIfNeedsUpdate(filePath, configString, next);
+      },
+      (needsUpdate, next) => {
+        if (!needsUpdate) {
+          return next();
+        }
+        fs.writeFile(filePath, configString, next);
       }
     ], (err) => {
       if (err) {
