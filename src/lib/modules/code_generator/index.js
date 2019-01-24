@@ -12,7 +12,6 @@ const Templates = {
   define_when_env_loaded: require('./code_templates/define-when-env-loaded.js.ejs'),
   main_context: require('./code_templates/main-context.js.ejs'),
   define_web3_simple: require('./code_templates/define-web3-simple.js.ejs'),
-  web3_connector: require('./code_templates/web3-connector.js.ejs'),
   do_when_loaded: require('./code_templates/do-when-loaded.js.ejs'),
   exec_when_env_loaded: require('./code_templates/exec-when-env-loaded.js.ejs')
 };
@@ -47,12 +46,6 @@ class CodeGenerator {
 
     this.events.on('config:load:contracts', (contractConfig) => {
       this.generateConfigs(contractConfig);
-    });
-
-    this.events.setCommandHandler('provider-code', function(cb) {
-      let providerCode = self.generateProvider(false);
-
-      cb(providerCode);
     });
 
     this.events.setCommandHandler('code', function(cb) {
@@ -96,55 +89,6 @@ class CodeGenerator {
     self.events.setCommandHandler('code-generator:embarkjs:init-provider-code', (cb) => {
       cb(self.getInitProviderCode());
     });
-  }
-
-  generateProvider(isDeployment) {
-    let self = this;
-    let result = "";
-    let providerPlugins;
-
-    result += Templates.main_context();
-    result += Templates.load_manager();
-    result += Templates.define_when_env_loaded();
-
-    if (self.blockchainConfig === {} || self.blockchainConfig.enabled === false) {
-      return result;
-    }
-
-    if (this.plugins) {
-      providerPlugins = this.plugins.getPluginsFor('clientWeb3Provider');
-    }
-
-    if (this.plugins && providerPlugins.length > 0) {
-      providerPlugins.forEach(function(plugin) {
-        result += plugin.generateProvider(self) + "\n";
-      });
-    } else {
-      let web3Load;
-
-      if (this.contractsConfig === {} || this.contractsConfig.enabled === false) {
-        return result;
-      }
-
-      if (isDeployment) {
-        let connection = utils.buildUrlFromConfig(this.contractsConfig.deployment);
-        web3Load = Templates.define_web3_simple({url: connection, done: 'done();'});
-      } else {
-        let connectionList = "[" + this.contractsConfig.dappConnection.map((x) => '"' + x + '"').join(',') + "]";
-        let isDev = self.blockchainConfig.isDev;
-        web3Load = Templates.web3_connector({
-          autoEnable: this.contractsConfig.dappAutoEnable,
-          connectionList: connectionList,
-          done: 'done(err);',
-          warnAboutMetamask: isDev,
-          blockchainClient: this.blockchainConfig.ethereumClientName
-        });
-      }
-
-      result += Templates.do_when_loaded({block: web3Load, environment: this.env});
-    }
-
-    return result;
   }
 
   generateContracts(contractsList, useEmbarkJS, isDeployment, useLoader) {
@@ -194,7 +138,7 @@ class CodeGenerator {
   }
 
   generateConfigs(contractConfig) {
-    this.dappConfigs.blockchain = {dappConnection: contractConfig.dappConnection};
+    this.dappConfigs.blockchain = {dappConnection: contractConfig.dappConnection, autoEnable: contractConfig.autoEnable};
     async.waterfall([
       (next) => {
         fs.mkdirp(utils.joinPath(this.embarkConfig.buildDir, constants.dappConfig.dir), next);
@@ -256,7 +200,7 @@ class CodeGenerator {
     return result;
   }
 
-  _getInitCode(codeType, config) {
+   _getInitCode(codeType, config) {
     let result = "";
     let pluginsWithCode = this.plugins.getPluginsFor('initCode');
     for (let plugin of pluginsWithCode) {
@@ -274,7 +218,6 @@ class CodeGenerator {
   generateABI(contractsList, options) {
     let result = "";
 
-    result += this.generateProvider(options.deployment);
     result += this.generateContracts(contractsList, options.useEmbarkJS, options.deployment, true);
     result += this.generateStorageInitialization(options.useEmbarkJS);
     result += this.generateCommunicationInitialization(options.useEmbarkJS);
@@ -419,12 +362,10 @@ class CodeGenerator {
         code += `\nimport Web3 from '${web3Location}';\n`;
         code += "\nglobal.Web3 = Web3;\n";
 
-        code += "\n if (typeof web3 === 'undefined') {";
-        code += "\n var web3 = new Web3();\n";
-        code += "\n }";
+        code += "\nif (typeof web3 === 'undefined') {";
+        code += "\n  var web3 = new Web3();";
+        code += "\n}";
 
-        let providerCode = self.generateProvider(false);
-        code += providerCode;
         code += "\nexport default web3;\n";
         next(null, code);
       }
